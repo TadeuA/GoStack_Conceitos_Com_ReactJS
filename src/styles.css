@@ -31,9 +31,27 @@ button {
   margin-top: 15px;
   font-weight: bold;
   font-size: 14px;
+  width: 100px;
 }
 
 div li button {
   margin: 0 15px;
   background: #ca4949;
+}
+
+div form {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}
+div form input {
+  width: 200px;
+}
+div form li {
+  margin: 5px;
+}
+button.techs {
+  background-color: #00f;
+  width: 75px;
+  font-size: 10px;
 }

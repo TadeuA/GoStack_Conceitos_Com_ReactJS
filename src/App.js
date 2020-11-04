@@ -1,29 +1,103 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 
 import "./styles.css";
 
+import api from "./services/api"
+
 function App() {
+  const [repositories, setRepositories] = useState([]);
+  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState('')
+  const [techs, setTechs] = useState([]);
+  const [tech, setTech] = useState('');
+
+  async function handleGetListRepositories(){
+    const response = await api.get('repositories')
+    setRepositories(response.data)
+  }
+
+  useEffect(()=>{
+    handleGetListRepositories()
+  },[])
+
   async function handleAddRepository() {
-    // TODO
+    const data = {
+      title,
+      url,
+      techs
+    }
+    const response = await api.post('repositories',data)
+    setRepositories([...repositories,response.data])
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    const filteredRepositories = repositories.filter((repository) => repository.id !== id);
+
+    setRepositories(filteredRepositories);
+     await api.delete(`repositories/${id}`)
+  }
+
+  function handleTech(){
+    if(techs.length > 0){
+      setTechs([...techs, tech])
+    }
+    if(techs.length === 0){
+      setTechs([tech])
+    }
+    setTech("")
   }
 
   return (
     <div>
-      <ul data-testid="repository-list">
-        <li>
-          Repositório 1
+      <form onSubmit={handleAddRepository}>
+        <label htmlFor="title">Titulo</label>
+        <input 
+          id="title" 
+          type="text" 
+          value={title} 
+          onChange={(event)=>{setTitle(event.target.value)}}
+          />
+        <label htmlFor="title">URL</label>
+        <input 
+          id="title" 
+          type="text" 
+          value={url} 
+          onChange={(event)=>{setUrl(event.target.value)}}
+          />
+        <label htmlFor="title">Tecnologias</label>
+        <ul>
+          {techs.map(technology => {
+            return (
+              <li key={technology}> {technology} </li>
+            )
+          })}
+        </ul>
+        <input 
+          id="title" 
+          type="text" 
+          value={tech} 
+          onChange={(event)=>{setTech(event.target.value)}}
+          />
+        <button className="techs" type="button" onClick={handleTech}>Adicionar tecnologia</button>
 
-          <button onClick={() => handleRemoveRepository(1)}>
-            Remover
-          </button>
-        </li>
+        <button type="submit">Adicionar</button>
+      </form>
+      <ul data-testid="repository-list">
+        {repositories.length > 0 && repositories.map(repository => {
+          return(
+            <li key={repository.id}>
+              {repository.title}
+            
+              <button onClick={() => handleRemoveRepository(repository.id)}>
+                Remover
+              </button>
+          </li>
+          )
+          
+          })}
+       
       </ul>
 
-      <button onClick={handleAddRepository}>Adicionar</button>
     </div>
   );
 }
